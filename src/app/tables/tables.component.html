@@ -1,0 +1,30 @@
+<input type="text" [(ngModel)]="count"> <button type="button" class="btn btn-primary" (click)="increaseData()">Increase Data</button>
+<br>
+<div class="example-header">
+  <input type="text" (keyup)="applyFilter()" [(ngModel)]="searchValue">
+
+</div>
+<br>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+<app-table-view [dataSource]="splittedData[0]"></app-table-view>
+    </div>
+    <div class="col-sm-4" *ngIf="isTable2">
+      <app-table-view [dataSource]="splittedData[1]"></app-table-view>
+    </div>
+    <div class="col-sm-4" *ngIf="isTable3">
+      <app-table-view [dataSource]="splittedData[2]"></app-table-view>
+    </div>
+  </div>
+</div>
+<br>
+<mat-form-field>
+  <mat-select name="countryVaraible" [(value)]="selectedCount" placeholder="Country" (selectionChange)="appendData()">
+    <mat-option *ngFor="let count of pageCount" [value]="count">
+      {{count}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+&nbsp;&nbsp; / {{dataSource.data.length}} Profiles
