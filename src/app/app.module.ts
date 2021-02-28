@@ -14,18 +14,26 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { TablesComponent } from './tables/tables.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {NgxPaginationModule, PaginatePipe} from 'ngx-pagination';
+import { MatRadioModule} from '@angular/material/radio';
+import { SearchComponent } from './search/search.component';
+import { PaginatorComponent } from './paginator/paginator.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TableViewComponent,
-    TablesComponent
+    TablesComponent,
+    SearchComponent,
+    PaginatorComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MatSortModule,
     MatTableModule,
+    MatRadioModule,
     MatNativeDateModule,
     MatPaginatorModule,
     MatSortModule,
@@ -33,9 +41,12 @@ import {MatSelectModule} from '@angular/material/select';
     FormsModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
+    NgxPaginationModule,
+    MatGridListModule,
+    MatSortModule,
     MatSelectModule
   ],
-  providers: [],
-  bootstrap: [TablesComponent]
+  providers: [PaginatePipe ],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,20 +1,3 @@
-
-
-<input type="text" [(ngModel)]="count"> <button type="button" class="btn btn-primary" (click)="increaseData()">Increase Data</button>
-
-<div class="container">
-  <div class="row">
-    <div class="col-sm-4">
-      <app-table-view [dataSource]="splittedData[0]"></app-table-view>
-
-    </div>
-    <div class="col-sm-4" *ngIf="isTable2">
-      <app-table-view [dataSource]="splittedData[1]"></app-table-view>
-
-    </div>
-    <div class="col-sm-4" *ngIf="isTable3">
-      <app-table-view [dataSource]="splittedData[2]"></app-table-view>
-    </div>
-  </div>
-  <mat-paginator [pageSize]="30" [pageSizeOptions]="[30, 60, 90]" (change)="changePageIndex($event, dataSource.data)"></mat-paginator>
-</div>
+<app-search></app-search>
+<br>
+<app-tables></app-tables>
