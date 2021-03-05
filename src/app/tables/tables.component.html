@@ -1,7 +1,8 @@
-<input type="text" [(ngModel)]="count"> <button type="button" class="btn btn-primary" (click)="increaseData()">Increase Data</button>
-<br>
-<br>
 
+n<input type="text" [(ngModel)]="count"> <button type="button" class="btn btn-primary" (click)="increaseData()">Increase Data</button>
+<br>
+<br>
+bbb {{activePage}}<br>
 <div class="container" matSort>
   <div class="row">
     <div class="col-sm-4">
@@ -33,4 +34,4 @@
                         [nextLabel]="next" (pageChange)="pageChanged($event)" maxSize="4"></pagination-controls>
 
 </div>
-<app-paginator [pageSize]="selectedCount" [recordCount]="dataSource.data.length"  (page)="selectPage($event)"></app-paginator>
+<app-paginator [pageSize]="selectedCount" [activePage]="activePage" [recordCount]="searchValue === '' ? dataSource.data.length : dataSource.filteredData.length"  (page)="selectPage($event)"></app-paginator>

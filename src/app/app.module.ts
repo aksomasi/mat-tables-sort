@@ -19,6 +19,7 @@ import {NgxPaginationModule, PaginatePipe} from 'ngx-pagination';
 import { MatRadioModule} from '@angular/material/radio';
 import { SearchComponent } from './search/search.component';
 import { PaginatorComponent } from './paginator/paginator.component';
+import { ProfileListComponent } from './profile-list/profile-list.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { PaginatorComponent } from './paginator/paginator.component';
     TableViewComponent,
     TablesComponent,
     SearchComponent,
-    PaginatorComponent
+    PaginatorComponent,
+    ProfileListComponent
   ],
   imports: [
     BrowserModule,

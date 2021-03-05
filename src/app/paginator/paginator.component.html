@@ -1,0 +1,24 @@
+<nav  role="navigation" aria-label="Pagination Navigation">
+  <div class="Pagination">
+    <div class="Pagination-item previous" [class.is-disabled]="hide('previous')">
+      <i class="Icon Icon--left-arrow"></i>
+      <a href="#" aria-label="Go to Previous Page" (click)="previous($event)">Previous</a>
+    </div>
+    <div class="u-flex" *ngIf="pages.length>1">
+      <div class="Pagination-item" [class.is-active]="isPageActive(page)" *ngFor="let page of pages">
+        <a
+          href="#"
+          [attr.aria-label]="'Go to Page ' + page"
+          [attr.aria-current]="isPageActive(page)"
+          (click)="selectPage($event, page)"
+        >
+          {{ page }}
+        </a>
+      </div>
+    </div>
+    <div class="Pagination-item next" [class.is-disabled]="hide('next')">
+      <a href="#" aria-label="Go to Next Page" (click)="next($event)">Next</a>
+      <i class="Icon Icon--right-arrow"></i>
+    </div>
+  </div>
+</nav>

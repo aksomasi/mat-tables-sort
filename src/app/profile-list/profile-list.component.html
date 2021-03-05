@@ -1,0 +1,32 @@
+<br>
+<div class="row">
+  <div class="col-sm-6">
+    <mat-form-field>
+      <mat-select name="countryVaraible" [(value)]="selectedCount" placeholder="Country" (selectionChange)="freshPagination()">
+        <mat-option *ngFor="let count of pageCount" [value]="count">
+          {{count}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    &nbsp;&nbsp; / {{dataSource.data.length}} Profiles
+  </div>
+  <div class="col-sm-6">
+    <app-paginator [pageSize]="selectedCount" [activePage]="activePage" [recordCount]="searchValue === '' ? dataSource.data.length : dataSource.filteredData.length"  (page)="applyPagination($event)"></app-paginator>
+  </div>
+</div>
+
+
+<div class="container" matSort>
+  <div class="row">
+    <div class="col-sm-4">
+      <app-table-view [dataSource]="splittedData[0]" [isIcons]="true" (emitSort)="applySort($event)"></app-table-view>
+    </div>
+    <div class="col-sm-4" *ngIf="isTable2">
+      <app-table-view [dataSource]="splittedData[1]"></app-table-view>
+    </div>
+    <div class="col-sm-4" *ngIf="isTable3">
+      <app-table-view [dataSource]="splittedData[2]"></app-table-view>
+    </div>
+  </div>
+</div>
+<br>

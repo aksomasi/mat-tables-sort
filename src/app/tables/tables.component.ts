@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {PeriodicElement} from '../data.interface';
@@ -9,6 +9,7 @@ import {AksService} from '../aks.service';
 @Component({
   selector: 'app-tables',
   templateUrl: './tables.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./tables.component.scss']
 })
 export class TablesComponent implements OnInit, AfterViewInit {
@@ -28,24 +29,25 @@ export class TablesComponent implements OnInit, AfterViewInit {
     screenReaderCurrentLabel: `You're on page`
   };
 
-
+  activePage = 1;
   selectedUser: any;
 
   prev = '';
   next = '';
   pageCount: any = [10, 30, 60, 100];
-  selectedCount = 100;
+  selectedCount = 10;
   searchValue: string;
   isTable2 = false;
   isTable3 = false;
   pageIndex: number;
   count = 120;
   updatedData;
+  tempposition = localStorage.getItem('position');
   splittedData = new Array<PeriodicElement[]>(3);
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   dataSource: MatTableDataSource<PeriodicElement>;
 
-  constructor(private paginate: PaginatePipe, private aks: AksService) {
+  constructor(private paginate: PaginatePipe, private aks: AksService, private cd: ChangeDetectorRef) {
 
     for (var i = 0; i < this.collection.count; i++) {
       this.collection.data.push(
@@ -83,20 +85,26 @@ export class TablesComponent implements OnInit, AfterViewInit {
 
 
   applySort(sort: MatSort) {
+    this.sort = sort;
     const data = this.searchValue === '' ? this.dataSource.data : this.dataSource.filteredData;
-    const filterData = data.filter(user => user.position !== this.selectedUser[0].position);
+    const filterData = data.filter(user => user.position !== 1);
     const sortDatasource = new MatTableDataSource<PeriodicElement>(filterData);
     sortDatasource.sortData(filterData, sort);
-    this.dataSource.data = [this.selectedUser[0], ...sortDatasource.data];
-    this.updatedData = this.dataSource.data;
-    this.appendData();
+    if (this.selectedUser?.length) {
+      this.updatedData  = [this.selectedUser[0], ...sortDatasource.data];
+    } else {
+      this.updatedData = sortDatasource.data;
+    }
+    this.selectPage(this.activePage, this.updatedData);
   }
 
   ngAfterViewInit() {
-      /*  this.sort.active = 'position';
-      this.sort.start = 'desc';
-      this.dataSource.sort = this.sort;
-      this.dataSource.sort = this.sort;*/
+    this.appendData();
+   // this.selectPage(1);
+    /*  this.sort.active = 'position';
+    this.sort.start = 'desc';
+    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort;*/
   }
 
   appendData() {
@@ -120,6 +128,7 @@ export class TablesComponent implements OnInit, AfterViewInit {
         this.splittedData[0] = this.updatedData.slice(0, 10);
         break;
     }
+    this.cd.markForCheck();
 
     this.isTable2 = this.splittedData[1]?.length > 1 ? true : false;
     this.isTable3 = this.splittedData[2]?.length > 1 ? true : false;
@@ -127,18 +136,27 @@ export class TablesComponent implements OnInit, AfterViewInit {
       this.isTable2 = false;
       this.isTable3 = false;
     }
-    this.selectedUser = this.updatedData.filter(user => user.position == 1);
+    this.selectedUser = this.updatedData.filter(user => user.position === 1);
+    if( this.selectedUser.length>0)
     this.aks.selectedProfile.next(this.selectedUser[0].position);
 
   }
 
   // tslint:disable-next-line:typedef
   applyFilter(searchValue) {
-    const data = this.dataSource.filteredData.filter(user => user.position !== this.selectedUser.position);
-    this.dataSource = new MatTableDataSource<PeriodicElement>(data);
-    this.dataSource.filter = searchValue.trim().toLowerCase();
-    this.updatedData = [this.selectedUser[0], ...this.dataSource.filteredData];
+    const filterData = new MatTableDataSource(this.dataSource.data);
+    filterData.filter = searchValue.trim().toLowerCase();
+    const y = this.dataSource.data;
+    this.updatedData = filterData.filteredData;
+    this.dataSource.filteredData =  this.updatedData;
     this.selectPage(1);
+    this.applySort(this.sort);
+
+    /*  const data = searchValue === '' ? this.dataSource.data : this.dataSource.filteredData;
+      const filterData = data.filter(user => user.position !== 1);
+      this.dataSource.filter = searchValue.trim().toLowerCase();
+      this.updatedData = [this.selectedUser[0], ...this.dataSource.filteredData];
+      this.selectPage(this.activePage && searchValue !== '' ? this.activePage : 1);*/
   }
 
   freshPagination() {
@@ -154,18 +172,25 @@ export class TablesComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.aks.searchProfile.subscribe(val => {
       if (val !== undefined) {
-        this.applyFilter(val);
+      this.applyFilter(val);
       }
     });
   }
 
-  selectPage(page: number) {
-    const data = this.dataSource.data.slice(
-      (page - 1) * this.selectedCount,
-      page * this.selectedCount
-    );
-    const tempDataSource = new MatTableDataSource(data);
-    this.updatedData = tempDataSource.filteredData;
+  selectPage(page: number, selecTadat?: any) {
+    this.activePage = page;
+    let data = selecTadat;
+    if(!data){
+      data = this.searchValue === '' ? this.dataSource.data : this.dataSource.filteredData;
+
+      const paginatedData = data.slice(
+        (page - 1) * this.selectedCount,
+        page * this.selectedCount
+      );
+      this.updatedData = paginatedData;
+    }
+
+
     this.appendData();
   }
 
@@ -181,10 +206,10 @@ export class TablesComponent implements OnInit, AfterViewInit {
       itemsPerPage: this.selectedCount,
       currentPage: 1
     };
-    this.dataSource.connect().subscribe(d => {
+  /*  this.dataSource.connect().subscribe(d => {
       this.updatedData = d;
       this.appendData();
-    });
+    });*/
 
     this.updatedData = this.paginate.transform(this.dataSource.filteredData, this.config);
     console.log(this.paginate);
